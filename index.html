@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday, My Entire World! ❤️</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #ffeef8 0%, #ffd6e8 50%, #ffbad6 100%);
+            --primary-love: #ff2a6d;
+            --secondary-love: #ff4757;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --box-color: #ff4d4d;
+            --ribbon-color: #ffffff;
+            --text-dark: #2d131c;
+            --cake-shadow: rgba(45, 19, 28, 0.15);
+            --cake-cream: #fff0f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-gradient);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- STAGE MANAGEMENT --- */
+        .stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            z-index: 10;
+        }
+
+        .stage.active {
+            display: flex !important;
+        }
+
+        #canvas-ambient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- STAGE 1: THE GIFT BOX --- */
+        .gift-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            width: 100%;
+        }
+
+        .gift-box {
+            width: 180px;
+            height: 180px;
+            background: var(--box-color);
+            border-radius: 24px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(255, 42, 109, 0.3);
+            animation: floatBox 2.5s ease-in-out infinite;
+        }
+
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            background: var(--ribbon-color);
+            width: 28px;
+            height: 100%;
+            left: 76px;
+            border-radius: 4px;
+        }
+
+        .gift-box::after {
+            content: '';
+            position: absolute;
+            background: var(--ribbon-color);
+            width: 100%;
+            height: 28px;
+            top: 76px;
+            border-radius: 4px;
+        }
+
+        .bow-left, .bow-right {
+            position: absolute;
+            width: 40px;
+            height: 28px;
+            border: 6px solid var(--ribbon-color);
+            border-radius: 50%;
+            top: -20px;
+        }
+        .bow-left { left: 52px; transform: rotate(-25deg); }
+        .bow-right { right: 52px; transform: rotate(25deg); }
+
+        .hint-text {
+            margin-top: 35px;
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.4;
+            color: var(--text-dark);
+            text-shadow: 0 2px 8px rgba(255,255,255,0.6);
+        }
+
+        @keyframes floatBox {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* --- STAGE 2: PASSCODE INTERFACE --- */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px 28px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            z-index: 30;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            color: var(--primary-love);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #5c464e;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .input-box {
+            width: 100%;
+            font-size: 26px;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #ffb3c6;
+            border-radius: 16px;
+            outline: none;
+            background: white;
+            color: var(--primary-love);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(45deg, var(--primary-love), var(--secondary-love));
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(255, 42, 109, 0.3);
+            cursor: pointer;
+        }
+
+        .error-hint {
+            color: #d90429;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* --- STAGE 3: VIDEO THEATER --- */
+        .theater {
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .media-box {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #000;
+            border-radius: 24px;
+            border: 5px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .media-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .letter {
+            background: rgba(255,255,255,0.85);
+            padding: 24px;
+            border-radius: 20px;
+            border-left: 5px solid var(--primary-love);
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .letter h3 { color: var(--primary-love); font-size: 18px; margin-bottom: 6px; }
+        .letter p { font-size: 14.5px; color: #403035; line-height: 1.6; }
+
+        /* --- STAGE 4: COVERFLOW SLIDER --- */
+        .slider-window {
+            width: 100%;
+            height: 330px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slider-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            perspective: 800px;
+            transform-style: preserve-3d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-slide {
+            position: absolute;
+            width: 200px;
+            height: 280px;
+            background: white;
+            border: 5px solid white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .slide-img { width: 100%; height: 80%; background: #f0f0f0; }
+        .slide-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        .slide-txt {
+            height: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #614d53;
+            padding: 4px;
+            text-align: center;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .circle-arrow {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-size: 16px;
+            color: var(--primary-love);
+            cursor: pointer;
+        }
+
+        /* --- STAGE 5: LUXURY CAKE REWORK --- */
+        #canvas-fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .cake-wrapper {
+            position: relative;
+            width: 280px;
+            height: 260px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-top: 30px;
+            z-index: 10;
+        }
+
+        /* Pseudo-3D Gold Finished Display Stand */
+        .cake-stand {
+            position: absolute;
+            width: 260px;
+            height: 16px;
+            background: linear-gradient(to right, #ffe066, #f5b041, #fcf3cf, #f5b041, #b7950b);
+            bottom: 15px;
+            border-radius: 50% / 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        }
+        .cake-stand::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 25px;
+            background: linear-gradient(to right, #f5b041, #b7950b);
+            bottom: -24px;
+            left: 90px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* Elite Dimensional Tiers */
+        .cake-tier {
+            position: absolute;
+            border-radius: 50% / 24px;
+            box-shadow: inset 0 -15px 35px var(--cake-shadow);
+        }
+
+        .tier-bottom {
+            width: 220px;
+            height: 90px;
+            background: linear-gradient(to bottom, #ff85a1, #ff5c8a);
+            bottom: 25px;
+        }
+        .tier-bottom::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            background: #ffa6c9;
+            border-radius: 50%;
+            top: 0;
+        }
+
+        .tier-top {
+            width: 160px;
+            height: 75px;
+            background: linear-gradient(to bottom, #ff9ebb, #ff70a6);
+            bottom: 80px;
+        }
+        .tier-top::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 32px;
+            background: var(--cake-cream);
+            border-radius: 50%;
+            top: 0;
+        }
+
+        /* Icing Details */
+        .rosettes {
+            position: absolute;
+            width: 140px;
+            height: 28px;
+            border-radius: 50%;
+            top: 2px;
+            left: 10px;
+            border: 5px dashed #ffb3c6;
+            opacity: 0.8;
+        }
+
+        /* Realistic Birthday Candle Layout */
+        .candle-stick {
+            position: absolute;
+            width: 10px;
+            height: 55px;
+            background: repeating-linear-gradient(45deg, #70e000, #70e000 6px, #ccff33 6px, #ccff33 12px);
+            bottom: 135px;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .wick {
+            position: absolute;
+            width: 2px;
+            height: 7px;
+            background: #2d131c;
+            bottom: 190px;
+        }
+
+        /* Flickering Realistic Flame Engine */
+        .flame-container {
+            position: absolute;
+            width: 18px;
+            height: 26px;
+            bottom: 195px;
+            animation: windSway 2.5s ease-in-out infinite alternate;
+        }
+
+        .flame-core {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #ffffff 0%, #ffea00 35%, #ff6a00 65%, #ff2a6d 100%);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 0 -4px 15px rgba(255, 106, 0, 0.85), 0 -10px 30px rgba(255, 42, 109, 0.6);
+            animation: flameFlicker 0.12s ease-in-out infinite alternate;
+        }
+
+        /* Particle Sparklers rising from the wick */
+        .sparkle-emit {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #fffb00;
+            border-radius: 50%;
+            animation: sparkRise 1.4s linear infinite;
+        }
+
+        @keyframes flameFlicker {
+            0% { transform: scale(0.96) rotate(-1deg); }
+            100% { transform: scale(1.04) rotate(1deg); }
+        }
+
+        @keyframes windSway {
+            0% { transform: translateX(-1px); }
+            100% { transform: translateX(2.5px); }
+        }
+
+        @keyframes sparkRise {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-ambient"></canvas>
+
+    <div class="stage active" id="stg-1" onclick="moveToStage('stg-1', 'stg-2')">
+        <div class="gift-container">
+            <div class="gift-box">
+                <div class="bow-left"></div>
+                <div class="bow-right"></div>
+            </div>
+            <div class="hint-text">A special gift for you, my queen...<br>Tap anywhere to unlock it! 🎁</div>
+        </div>
+    </div>
+
+    <div class="stage" id="stg-2">
+        <div class="card">
+            <h2>🔒 Our Secret Key</h2>
+            <p>Enter our special anniversary date or your favorite key to unlock your real birthday surprise!</p>
+            <input type="password" class="input-box" id="codeField" placeholder="••••" inputmode="numeric">
+            <button class="action-btn" onclick="checkCode()">Access Surprise Box ✨</button>
+            <div class="error-hint" id="wrongCodeAlert">That's not it, baby! Think of our special code. 😉</div>
+        </div>
+    </div>
+
+    <div class="stage" id="stg-3">
+        <div class="theater">
+            <h1 style="color: var(--primary-love); font-weight:900; margin-bottom:20px; text-align:center; font-size:26px;">🎉 Happy Birthday, Beautiful! 🎉</h1>
+            <div class="media-box">
+                <video id="vPlayer" controls playsinline>
+                    <source src="birthday-video.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="letter">
+                <h3>To the love of my life,</h3>
+                <p>Wishing you an absolutely gorgeous day overflowing with laughter and endless magic. Thank you for walking into my world and turning every single day into a beautiful dream. You deserve the absolute universe today and always. I love you to the moon and back! ❤️✨</p>
+            </div>
+            <button class="action-btn" onclick="stopVideoAndGo()" style="border-radius:30px;">See Our Memories Slider ➔</button>
+        </div>
+    </div>
+
+    <div class="stage" id="stg-4">
+        <h1 style="color: var(--primary-love); font-size:22px; margin-bottom:15px; text-align:center;">📸 Our Beautiful Journey</h1>
+        <div class="slider-window">
+            <div class="slider-container">
+                <div class="card-slide"><div class="slide-img"><img src="photo1.jpg" alt="1"></div><div class="slide-txt">Where our beautiful story began... 🌸</div></div>
+                <div class="card-slide"><div class="slide-img"><img src="photo2.jpg" alt="2"></div><div class="slide-txt">Your smile makes everything better 😊</div></div>
+                <div class="card-slide"><div class="slide-img"><img src="photo3.jpg" alt="3"></div><div class="slide-txt">Every single moment with you is a gift ❤️</div></div>
+                <div class="card-slide"><div class="slide-img"><img src="photo4.jpg" alt="4"></div><div class="slide-txt">My favorite place is right next to you 👩‍❤️‍👨</div></div>
+                <div class="card-slide"><div class="slide-img"><img src="photo5.jpg" alt="5"></div><div class="slide-txt">To forever and ever together... 💍</div></div>
+            </div>
+        </div>
+        <div class="slider-row">
+            <button class="circle-arrow" onclick="moveGallery(-1)">◀️</button>
+            <button class="action-btn" onclick="moveToStage('stg-4', 'stg-5', startFireworks)" style="padding:12px 24px; border-radius:30px;">Make a Wish! 🎂</button>
+            <button class="circle-arrow" onclick="moveGallery(1)">▶️</button>
+        </div>
+    </div>
+
+    <div class="stage" id="stg-5">
+        <canvas id="canvas-fireworks"></canvas>
+        <h1 style="color:var(--primary-love); text-align:center; font-size:24px; font-weight:900; line-height:1.4; z-index:10; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">💝 MAY ALL YOUR WISHES COME TRUE! 💝<br><span style="font-size: 15px; font-weight: 600; color: #6e4e58;">I am completely yours forever and ever.</span></h1>
+        
+        <div class="cake-wrapper">
+            <div class="cake-stand"></div>
+            <div class="cake-tier tier-bottom"></div>
+            <div class="cake-tier tier-top">
+                <div class="rosettes"></div>
+            </div>
+            <div class="wick"></div>
+            <div class="candle-stick"></div>
+            <div class="flame-container">
+                <div class="flame-core"></div>
+                <div class="sparkle-emit" style="left: 2px; animation-delay: 0s;"></div>
+                <div class="sparkle-emit" style="left: 12px; animation-delay: 0.4s;"></div>
+                <div class="sparkle-emit" style="left: 6px; animation-delay: 0.8s;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SECRET_PASSCODE = "1234";
+
+        let slideIndex = 2;
+
+        function moveToStage(currentId, nextId, callback = null) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(nextId).classList.add('active');
+            if(callback) callback();
+        }
+
+        function checkCode() {
+            const val = document.getElementById('codeField').value;
+            const error = document.getElementById('wrongCodeAlert');
+            if(val === SECRET_PASSCODE) {
+                error.style.display = 'none';
+                moveToStage('stg-2', 'stg-3', () => {
+                    document.getElementById('vPlayer').play().catch(()=>{});
+                });
+            } else {
+                error.style.display = 'block';
+                document.getElementById('codeField').value = '';
+            }
+        }
+
+        function stopVideoAndGo() {
+            document.getElementById('vPlayer').pause();
+            moveToStage('stg-3', 'stg-4', updateSlides);
+        }
+
+        // Ambient Background Setup
+        const amb = document.getElementById('canvas-ambient');
+        const actx = amb.getContext('2d');
+        let hearts = [];
+        
+        function setupAmbient() {
+            amb.width = window.innerWidth;
+            amb.height = window.innerHeight;
+            for(let i=0; i<15; i++) {
+                hearts.push({
+                    x: Math.random() * amb.width,
+                    y: Math.random() * amb.height,
+                    s: Math.random() * 10 + 6,
+                    ySpd: -(Math.random() * 0.5 + 0.2),
+                    t: Math.random() * 5
+                });
+            }
+            drawAmbient();
+        }
+
+        function drawAmbient() {
+            actx.clearRect(0,0,amb.width,amb.height);
+            actx.fillStyle = "rgba(255, 74, 125, 0.2)";
+            hearts.forEach(h => {
+                h.y += h.ySpd;
+                h.t += 0.01;
+
+                h.x += Math.sin(h.t) * 0.1;
+
+                if (h.y < -20) {
+                    h.y = amb.height + 20;
+                    h.x = Math.random() * amb.width;
+                }
+
+                actx.beginPath();
+                actx.moveTo(h.x, h.y);
+
+                actx.bezierCurveTo(
+                    h.x - h.s / 2,
+                    h.y - h.s / 2,
+                    h.x - h.s,
+                    h.y + h.s / 3,
+                    h.x,
+                    h.y + h.s
+                );
+
+                actx.bezierCurveTo(
+                    h.x + h.s,
+                    h.y + h.s / 3,
+                    h.x + h.s / 2,
+                    h.y - h.s / 2,
+                    h.x,
+                    h.y
+                );
+
+                actx.fill();
+            });
+
+            requestAnimationFrame(drawAmbient);
+        }
+
+        setupAmbient();
+
+        /* ==========================
+           COVERFLOW GALLERY
+        ========================== */
+
+        const slides = document.querySelectorAll('.card-slide');
+
+        function updateSlides() {
+            slides.forEach((slide, idx) => {
+
+                const diff = idx - slideIndex;
+
+                if (diff === 0) {
+                    slide.style.transform =
+                        'translateX(0px) translateZ(100px) scale(1)';
+                    slide.style.opacity = '1';
+                    slide.style.zIndex = '5';
+                }
+
+                else if (diff === 1) {
+                    slide.style.transform =
+                        'translateX(130px) scale(.85)';
+                    slide.style.opacity = '.6';
+                    slide.style.zIndex = '4';
+                }
+
+                else if (diff === -1) {
+                    slide.style.transform =
+                        'translateX(-130px) scale(.85)';
+                    slide.style.opacity = '.6';
+                    slide.style.zIndex = '4';
+                }
+
+                else {
+                    slide.style.transform =
+                        `translateX(${diff * 150}px) scale(.6)`;
+
+                    slide.style.opacity = '0';
+                    slide.style.zIndex = '1';
+                }
+            });
+        }
+
+        function moveGallery(dir) {
+
+            slideIndex += dir;
+
+            if (slideIndex < 0)
+                slideIndex = 0;
+
+            if (slideIndex > slides.length - 1)
+                slideIndex = slides.length - 1;
+
+            updateSlides();
+        }
+
+        updateSlides();
+
+        /* ==========================
+           FIREWORKS
+        ========================== */
+
+        const fx =
+            document.getElementById('canvas-fireworks');
+
+        const fctx = fx.getContext('2d');
+
+        let particles = [];
+        let fireworksStarted = false;
+
+        function startFireworks() {
+
+            if (fireworksStarted)
+                return;
+
+            fireworksStarted = true;
+
+            fx.width = window.innerWidth;
+            fx.height = window.innerHeight;
+
+            setInterval(() => {
+
+                if (
+                    document
+                        .getElementById('stg-5')
+                        .classList.contains('active')
+                ) {
+
+                    boom(
+                        Math.random() * fx.width,
+                        Math.random() * (fx.height * 0.45) + 50
+                    );
+                }
+
+            }, 700);
+
+            runFX();
+        }
+
+        function boom(x, y) {
+
+            const colors = [
+                '#ff2a6d',
+                '#ff4757',
+                '#ffd60a',
+                '#70e000',
+                '#00f5d4',
+                '#9b5de5'
+            ];
+
+            const color =
+                colors[
+                    Math.floor(
+                        Math.random() * colors.length
+                    )
+                ];
+
+            for (let i = 0; i < 35; i++) {
+
+                const angle =
+                    (Math.PI * 2 / 35) * i;
+
+                const speed =
+                    Math.random() * 3 + 2;
+
+                particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    alpha: 1,
+                    color
+                });
+            }
+        }
+
+        function runFX() {
+
+            fctx.clearRect(
+                0,
+                0,
+                fx.width,
+                fx.height
+            );
+
+            particles.forEach((p, i) => {
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                p.vy += 0.04;
+                p.alpha -= 0.015;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    return;
+                }
+
+                fctx.save();
+
+                fctx.globalAlpha = p.alpha;
+                fctx.fillStyle = p.color;
+
+                fctx.beginPath();
+                fctx.arc(
+                    p.x,
+                    p.y,
+                    2.5,
+                    0,
+                    Math.PI * 2
+                );
+
+                fctx.fill();
+                fctx.restore();
+            });
+
+            requestAnimationFrame(runFX);
+        }
+
+        /* ==========================
+           RESPONSIVE RESIZE
+        ========================== */
+
+        window.addEventListener('resize', () => {
+
+            amb.width = window.innerWidth;
+            amb.height = window.innerHeight;
+
+            fx.width = window.innerWidth;
+            fx.height = window.innerHeight;
+        });
+
+        document.addEventListener(
+            'keydown',
+            (e) => {
+                if (e.key === 'Enter') {
+                    checkCode();
+                }
+            }
+        );
+    </script>
+</body>
+</html>
